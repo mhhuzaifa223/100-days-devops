@@ -1,0 +1,3 @@
+Hello from Feature A
+Version 2
+Feature update
