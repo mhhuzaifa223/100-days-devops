@@ -12,3 +12,4 @@ A hands-on journey of 100 DevOps projects covering Linux, Bash, Git, CI/CD, Dock
 - [ ] Day 6 — Terraform
 - [ ] Day 7 — AWS
 - [ ] Day 8 — DevSecOps
+Day 2 Git practice in progress.
