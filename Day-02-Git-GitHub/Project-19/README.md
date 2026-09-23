@@ -1,23 +1,62 @@
-# Project 19 — Git Ignore & Secret Protection
+# Project 19 — Git Disaster Recovery Project
 
-## Goal
+## Objective
 
-Learn how to prevent sensitive files such as `.env` from being accidentally committed to Git.
+Learn how to recover Git work after accidental commits, deleted branches, unwanted changes, or other common repository mistakes.
+
+## Technologies
+
+- Git
+- GitHub
+- Linux
 
 ## What I Practiced
 
-- Created a fake `.env` file containing a dummy AWS access key.
-- Added `.env` to the root `.gitignore`.
-- Verified Git was ignoring the file with `git check-ignore -v .env`.
-- Confirmed `.env` remained ignored when using `git add .`.
-- Learned that `.gitignore` does not remove secrets that were already committed.
-- Learned why secret rotation is necessary if real credentials are exposed.
-- Discovered and fixed an accidentally nested Git repository inside Project-11.
+- Inspecting Git history
+- Identifying previous commits
+- Recovering previous versions of files
+- Using Git reflog to locate previous repository states
+- Recovering deleted branch references
+- Understanding reset and revert
+- Restoring work without losing useful history
 
-## Important Lesson
+## Recovery Workflow
 
-Never commit real AWS credentials, API keys, passwords, private keys, or other secrets.
+Problem → Inspect History → Locate Correct Commit → Recover Changes → Verify Repository
 
-Use `.gitignore` to prevent sensitive local files from being tracked.
+## Commands Used
 
-If a real secret is accidentally committed, removing the file is not enough. The credential should be revoked or rotated immediately.
+- git log
+- git reflog
+- git status
+- git show
+- git restore
+- git reset
+- git revert
+- git branch
+
+## Testing
+
+A repository state was intentionally changed to simulate a common Git mistake.
+
+Git history and the reflog were inspected to locate the previous valid state.
+
+The required commit or changes were recovered and the repository was checked afterward to confirm that the expected files and history were restored.
+
+## Key Concepts Learned
+
+- Git disaster recovery
+- Git reflog
+- Commit history
+- Deleted branches
+- git reset
+- git revert
+- git restore
+- Recovery from accidental changes
+- Repository state recovery
+
+## Why This Matters
+
+Git stores references to previous repository states, making many accidental changes recoverable.
+
+Understanding recovery commands is important because mistakes such as deleted branches, unwanted resets, or accidental changes can happen during normal development.
