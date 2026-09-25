@@ -2,60 +2,141 @@
 
 ## Objective
 
-Learn the fundamentals of Continuous Integration by creating a simple automated pipeline that validates code whenever changes are pushed to a Git repository.
+Build a basic GitHub Actions CI pipeline that validates and runs a Bash application.
 
 ## Technologies
 
 - Git
+- GitHub
 - GitHub Actions
-- YAML
+- Bash
 - Linux
 
-## What I Practiced
+## Project Structure
 
-- Understanding Continuous Integration
-- Creating a GitHub Actions workflow
-- Defining workflow triggers
-- Creating CI jobs
-- Running automated commands
-- Checking pipeline results
-- Understanding successful and failed CI runs
+    100-days-devops/
+    ├── .github/
+    │   └── workflows/
+    │       └── ci.yml
+    └── Day-03-CI-CD/
+        └── Project-21/
+            ├── app.sh
+            └── README.md
+
+## How It Works
+
+1. Developer changes the application.
+2. Developer pushes changes to GitHub or opens a Pull Request.
+3. GitHub Actions starts an Ubuntu runner.
+4. The repository is checked out.
+5. Bash syntax is validated.
+6. The application is executed.
+7. The workflow passes or fails based on the command exit codes.
 
 ## CI Workflow
 
-Developer → Git Push → GitHub Actions → CI Job → Validation → Pass or Fail
+    name: Basic CI Pipeline
 
-## Files Used
+    on:
+      push:
+        branches:
+          - main
+      pull_request:
+        branches:
+          - main
 
-- `.github/workflows/ci.yml`
+    jobs:
+      validate:
+        runs-on: ubuntu-latest
 
-## Commands Used
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
 
-- git status
-- git add
-- git commit
-- git push
+          - name: Check Bash syntax
+            run: bash -n Day-03-CI-CD/Project-21/app.sh
 
-## Testing
+          - name: Run Application
+            run: bash Day-03-CI-CD/Project-21/app.sh
 
-A GitHub Actions workflow was configured to run automatically when changes were pushed to the repository.
+## Local Testing
 
-The workflow executed validation commands and reported whether the CI job completed successfully.
+Check Bash syntax:
+
+    bash -n app.sh
+
+Run the application:
+
+    ./app.sh
+
+Expected output:
+
+    DevOps CI Pipeline
+    Application is running successfully
+
+## Failure Testing
+
+A missing quotation mark was intentionally introduced into app.sh.
+
+The command:
+
+    bash -n app.sh
+
+returned:
+
+    unexpected EOF while looking for matching '"'
+    syntax error: unexpected end of file
+
+The problem was fixed by restoring the missing quotation mark.
+
+## Troubleshooting
+
+### File Not Found
+
+Initially the workflow tried:
+
+    bash -n app.sh
+
+The workflow runs from the repository root, while app.sh is located inside:
+
+    Day-03-CI-CD/Project-21/
+
+The correct path is:
+
+    bash -n Day-03-CI-CD/Project-21/app.sh
+
+### Untracked Files
+
+The application must be committed and pushed to GitHub before GitHub Actions can access it.
+
+Commands used:
+
+    git add Day-03-CI-CD/Project-21/
+    git commit -m "Add Project 21 CI application"
+    git push
 
 ## Key Concepts Learned
 
 - Continuous Integration
-- CI pipeline
 - GitHub Actions
-- Workflow
-- Workflow trigger
-- Job
-- Step
-- Automated validation
-- Pipeline success and failure
+- Workflow triggers
+- Jobs
+- Steps
+- GitHub Actions runners
+- Ubuntu runners
+- YAML hierarchy
+- YAML lists
+- uses
+- run
+- Bash syntax validation
+- Exit codes
+- Repository-relative paths
+- Git tracked vs untracked files
+- CI troubleshooting
 
-## Why This Matters
+## Result
 
-Continuous Integration helps teams detect problems early by automatically validating changes whenever developers push code.
+The CI pipeline successfully validates and executes the Bash application.
 
-This reduces manual testing and provides fast feedback before changes move further through the delivery process.
+The pipeline was also intentionally broken and successfully troubleshot.
+
