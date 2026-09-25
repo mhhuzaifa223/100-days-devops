@@ -1,0 +1,23 @@
+name: Basic CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      -main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Bash syntax
+        run:  bash -n app.sh
+    
+      - name: Run Application
+        run: ./app.sh
