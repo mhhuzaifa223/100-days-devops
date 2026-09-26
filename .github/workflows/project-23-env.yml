@@ -1,0 +1,24 @@
+name: CI Environment Varibales
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  environment-test:
+    runs-on: ubuntu-latest
+  
+    env:
+      APP_NAME: DevOps-CI-App
+      APP_ENV: testing
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display CI Environment
+        run: bash Day-03-CI-CD/Project-23/app.sh
