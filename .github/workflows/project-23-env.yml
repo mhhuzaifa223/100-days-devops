@@ -24,6 +24,9 @@ jobs:
       - name: Display CI Environment
         run: bash Day-03-CI-CD/Project-23/app.sh
         
+      - name: Test secret masking
+        run: echo "Secret value: $DEMO_SECRET"
+
       - name: Verify Secret is available
         run: |
           if [ -n "$DEMO_SECRET" ]; then
