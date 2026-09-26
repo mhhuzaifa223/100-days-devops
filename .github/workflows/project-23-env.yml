@@ -1,4 +1,4 @@
-name: CI Environment Varibales
+name: CI Environment Variables
 
 on:
   push:
@@ -11,27 +11,28 @@ on:
 jobs:
   environment-test:
     runs-on: ubuntu-latest
-  
+
     env:
       APP_NAME: DevOps-CI-App
       APP_ENV: testing
-      DEMO_SECRET: ${{ secrets.DEMO_SECRET}}
-    
+      DEMO_SECRET: ${{ secrets.DEMO_SECRET }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Display CI Environment
         run: bash Day-03-CI-CD/Project-23/app.sh
-        
+
       - name: Test secret masking
-        run: echo "Secret value: $DEMO_SECRET"
+        run: |
+          echo "Secret value: $DEMO_SECRET"
 
       - name: Verify Secret is available
         run: |
           if [ -n "$DEMO_SECRET" ]; then
             echo "Secret is available to the CI job"
-          else 
+          else
             echo "Secret is missing"
             exit 1
-          fi 
+          fi
