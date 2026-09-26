@@ -15,6 +15,7 @@ jobs:
     env:
       APP_NAME: DevOps-CI-App
       APP_ENV: testing
+      DEMO_SECRET: ${{ secrets.DEMO_SECRET}}
     
     steps:
       - name: Checkout repository
@@ -22,3 +23,12 @@ jobs:
 
       - name: Display CI Environment
         run: bash Day-03-CI-CD/Project-23/app.sh
+        
+      - name: Verify Secret is available
+        run: |
+          if [ -n "$DEMO_SECRET" ]; then
+            echo "Secret is available to the CI job"
+          else 
+            echo "Secret is missing"
+            exit 1
+          fi 
