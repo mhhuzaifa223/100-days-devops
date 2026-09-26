@@ -1,0 +1,28 @@
+name: Automated Unit Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/Checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python:-version: '3.11'
+      
+      - name: Install Pytest
+        run: pip install pytest
+
+      - name: Run Unit test
+        run: pytest -v Day-03-CI-CD/project-22
