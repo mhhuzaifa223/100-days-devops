@@ -19,10 +19,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python:-version: '3.11'
+          python-version: '3.11'
       
       - name: Install Pytest
         run: pip install pytest
 
       - name: Run Unit test
-        run: pytest -v Day-03-CI-CD/project-22
+        run: pytest -v Day-03-CI-CD/Project-22
