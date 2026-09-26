@@ -6,7 +6,7 @@ echo "Version: ${APP_VERSION:-undefined}"
 
 if [ "$APP_ENV" = "production" ]; then
     echo "Production configuration active"
-elif [ "$APP_ENV" = "staging" ]; then
+elif [ "$APP_ENV" = "staging-broken" ]; then
     echo "Staging configuration active"
 elif [ "$APP_ENV" = "development" ]; then
     echo "Development configuration active"
