@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "Application: $APP_NAME"
-echo "Environment: $APP_ENV"
+echo "Docker CI/CD Pipeline"
+echo "Application is running inside a container"
