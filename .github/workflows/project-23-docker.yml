@@ -27,11 +27,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest Day-03-CI-CD/Project-23
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest Day-03-CI-CD/Project-23
 
       - name: Push Docker Image
         run: |
-         docker push \ ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest
+         docker push ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest
 
 
