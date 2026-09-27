@@ -29,7 +29,7 @@ jobs:
         run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Build Docker Image
-          run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:${IMAGE_TAG} -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest Day-03-CI-CD/Project-23
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:${IMAGE_TAG} -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest Day-03-CI-CD/Project-23
       
       - name: Push versioned image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:${IMAGE_TAG}
