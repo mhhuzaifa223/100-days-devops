@@ -14,7 +14,7 @@ jobs:
     
     steps:
       - name: Checkout repository
-      - name: actions/checkout@v4
+      - uses: actions/checkout@v4
  
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -28,7 +28,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest \ Day-03-CI-CD/project-23
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest \ Day-03-CI-CD/Project-23
 
       - name: Push Docker Image
         run: |
