@@ -1,0 +1,37 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+      - name: actions/checkout@v4
+ 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login To Dokcer Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest \ Day-03-CI-CD/project-23
+
+      - name: Push Docker Image
+        run: |
+         docker push \ ${{ secrets.DOCKERHUB_USERNAME }}/devops-project-23:latest
+
+
