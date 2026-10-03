@@ -1,6 +1,4 @@
 def calculate_total(price, quantity):
-    password = "SuperSecret123"
-    unused_variable = 999
     return price * quantity
 
 
