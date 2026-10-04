@@ -13,14 +13,17 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([
-                        string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')
+                        string(
+                            credentialsId: 'sonarqube-token',
+                            variable: 'SONAR_TOKEN'
+                        )
                     ]) {
                         sh '''
-                            sonar-scanner \
+                            ${tool 'SonarScanner'}/bin/sonar-scanner \
                               -Dsonar.projectKey=devsecops-project-27 \
-                              -Dsonar.sources=. \
-                              -Dsonar.host.url=$SONAR_HOST_URL \
-                              -Dsonar.token=$SONAR_TOKEN
+                              -Dsonar.sources=Day-03-CI-CD/Project-27 \
+                              -Dsonar.host.url=http://sonarqube:9000 \
+                              -Dsonar.token="$SONAR_TOKEN"
                         '''
                     }
                 }
