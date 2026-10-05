@@ -1,117 +1,256 @@
-# Project 30 — Blue/Green Deployment Pipeline
+# Project 30 — Production CI/CD with Automated Rollback
 
 ## Objective
 
-Learn how Blue/Green deployment can release a new application version while keeping the existing version available for traffic, allowing controlled testing and fast rollback.
+Build a production-style Kubernetes deployment with rolling updates, health checks, deployment verification, failure detection, and rollback.
 
 ## Technologies
 
-- Git
-- GitHub Actions or Jenkins
-- Docker
 - Kubernetes
-- NGINX
-- AWS ALB / Kubernetes Ingress
-- Linux
+- Kind
+- Docker
+- kubectl
+- Python
+- Flask
+- Jenkins
 
-## What I Practiced
+## Architecture
 
-- Running two application environments
-- Deploying a new version separately from the active version
-- Testing the new version before exposing it to users
-- Switching traffic between environments
-- Monitoring the new deployment
-- Rolling back by switching traffic back to the previous version
+    GitHub
+       ↓
+    CI/CD Pipeline
+       ↓
+    Docker Image
+       ↓
+    Kubernetes Deployment
+       ↓
+    Rolling Update
+       ↓
+    Health Checks
+       ↓
+    Production Service
 
-## Deployment Model
+If a deployment fails, Kubernetes can roll back to the previous working version.
 
-Blue = Current production version
+## Application
 
-Green = New application version
+The Flask application provides:
 
-Traffic initially goes to Blue.
+    /
+    
+and:
 
-After Green is deployed and verified, traffic is switched:
+    /health
 
-Blue → Green
+The health endpoint is used by Kubernetes readiness and liveness probes.
 
-If Green has a problem:
+## Docker
 
-Green → Blue
+The production image uses Python 3.12 and Flask.
 
-## Pipeline Workflow
+Build:
 
-Code
-→ Build
-→ Test
-→ Dockerize
-→ Push Image
-→ Deploy Green
-→ Test Green
-→ Switch Traffic
-→ Monitor
-→ Roll Back if Required
+    docker build -t project-30:1.0.0 Day-03-CI-CD/Project-30
+
+Load into Kind:
+
+    kind load docker-image project-30:1.0.0 --name devops-lab
+
+## Kubernetes Deployment
+
+The Deployment uses a RollingUpdate strategy.
+
+Configuration:
+
+    maxUnavailable: 0
+    maxSurge: 1
+
+This means Kubernetes does not intentionally make all existing replicas unavailable during an update.
+
+## Health Checks
+
+The application uses:
+
+- Readiness probe
+- Liveness probe
+
+Readiness determines whether a Pod should receive traffic.
+
+Liveness determines whether Kubernetes should consider the application unhealthy.
+
+The probes use:
+
+    /health
+
+## Initial Production Version
+
+The initial application version was:
+
+    project-30:1.0.0
+
+The deployment was verified with:
+
+    kubectl rollout status deployment/project-30
+
+The Pods reached Running and Ready status.
+
+## Production Service
+
+The application is exposed through a Kubernetes ClusterIP Service.
+
+Test locally:
+
+    kubectl port-forward service/project-30 8084:80
+
+Then:
+
+    curl http://localhost:8084
+    curl http://localhost:8084/health
+
+Expected application response:
+
+    Project 30 - Production Application v1.0.0
+
+## Failure Simulation
+
+A broken version was intentionally created:
+
+    project-30:2.0.0
+
+The new version contained an invalid readiness probe configuration.
+
+The application itself could start, but the Kubernetes health check could not succeed.
+
+This simulated a production deployment failure.
+
+## Failed Rollout
+
+The Deployment was updated to version 2:
+
+    project-30:2.0.0
+
+The rollout was monitored with:
+
+    kubectl rollout status deployment/project-30 --timeout=30s
+
+The rollout could not successfully complete because the new Pods did not become Ready.
+
+This demonstrated why health checks are important in production deployments.
+
+## Rollback
+
+The previous stable version was restored with:
+
+    kubectl rollout undo deployment/project-30
+
+Then the deployment was verified:
+
+    kubectl rollout status deployment/project-30
+
+The deployment returned to:
+
+    project-30:1.0.0
 
 ## Deployment Flow
 
-1. Build the new application version.
-2. Create the Docker image.
-3. Push the image to a container registry.
-4. Deploy the new version as Green.
-5. Verify that Green is healthy.
-6. Run application tests against Green.
-7. Switch production traffic from Blue to Green.
-8. Monitor the new version.
-9. Switch traffic back to Blue if problems occur.
+Successful deployment:
 
-## Testing
+    Version 1
+       ↓
+    Production
+       ↓
+    Deploy Version 2
+       ↓
+    Health Checks
+       ↓
+    Ready
+       ↓
+    Production
 
-### Successful Deployment
+Failed deployment:
 
-Green passes health checks and application tests.
-
-Expected result:
-
-- Green becomes healthy.
-- Traffic is switched from Blue to Green.
-- Users receive the new application version.
-
-### Failed Deployment
-
-Introduce a broken application version or failing health check.
-
-Expected result:
-
-- Green fails validation.
-- Blue continues serving traffic.
-- Production traffic is not switched to the broken version.
-
-### Rollback
-
-If problems are detected after switching traffic:
-
-Green → Blue
-
-Expected result:
-
-- Traffic returns to the previous stable version.
-- Recovery does not require rebuilding the application.
+    Version 1
+       ↓
+    Deploy Version 2
+       ↓
+    Health Check Failure
+       ↓
+    Rollout Failure
+       ↓
+    Rollback
+       ↓
+    Version 1
+       ↓
+    Healthy Production
 
 ## Key Concepts Learned
 
-- Blue/Green deployment
-- Zero-downtime deployment
-- Traffic switching
-- Kubernetes Services
-- Kubernetes Ingress
+- Production CI/CD
+- Kubernetes Deployments
+- RollingUpdate
+- Readiness probes
+- Liveness probes
+- Deployment health
+- Rollout status
+- Deployment history
+- Kubernetes rollback
+- Zero-downtime deployment strategy
+- Failure recovery
+- Desired state
+- Production safety
+
+## Troubleshooting
+
+### Pods are not Ready
+
+Check:
+
+    kubectl get pods
+
+Then:
+
+    kubectl describe pod <pod-name>
+
+Check:
+
+- Container logs
+- Readiness probe
+- Liveness probe
+- Container port
+- Application endpoint
+
+### Rollout is stuck
+
+Check:
+
+    kubectl rollout status deployment/project-30
+
+Then:
+
+    kubectl describe deployment project-30
+
+Check the Pods and events for the reason.
+
+### Roll back a failed deployment
+
+Use:
+
+    kubectl rollout undo deployment/project-30
+
+Then verify:
+
+    kubectl rollout status deployment/project-30
+
+## Result
+
+Project 30 successfully demonstrated a production-style Kubernetes deployment with:
+
+- Rolling updates
 - Health checks
-- Deployment validation
-- Production monitoring
-- Fast rollback
-- Release strategies
+- Deployment verification
+- Failure simulation
+- Failed rollout detection
+- Automated rollback
 
-## Why This Matters
+The stable version was restored after the intentionally broken deployment failed its health checks.
 
-Blue/Green deployment separates the new release from the currently active production version.
-
-This allows the new version to be tested before receiving production traffic and provides a simple rollback mechanism when a deployment causes problems.
