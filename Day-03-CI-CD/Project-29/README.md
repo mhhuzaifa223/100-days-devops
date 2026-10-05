@@ -1,109 +1,170 @@
-# Project 29 — Kubernetes Deployment Pipeline
+# Project 29 — Blue/Green Deployment Pipeline
 
 ## Objective
 
-Learn how a CI/CD pipeline can automatically build an application container, push it to a registry, deploy it to Kubernetes, verify the deployment, and support rollback.
+Implement a Blue/Green deployment strategy using Kubernetes.
+
+The project runs two application versions simultaneously and switches production traffic between them using a Kubernetes Service.
 
 ## Technologies
 
-- Git
-- GitHub Actions or Jenkins
-- Docker
 - Kubernetes
+- Kind
+- Docker
 - kubectl
-- Helm
-- Container Registry
-- Linux
+- Python
+- Flask
+- Jenkins
 
-## What I Practiced
+## Architecture
 
-- Building Docker images in CI
-- Tagging images with a version or commit SHA
-- Pushing images to a container registry
-- Deploying applications to Kubernetes
-- Updating Kubernetes workloads
-- Verifying deployment health
-- Performing Kubernetes rollbacks
+    Kubernetes Service
+          |
+          +---- BLUE deployment
+          |
+          +---- GREEN deployment
 
-## Pipeline Workflow
+Only one version receives production traffic at a time.
 
-Code
-→ Checkout
-→ Build
-→ Test
-→ Dockerize
-→ Push Image
-→ Deploy to Kubernetes
-→ Verify
-→ Rollback if Required
+## Blue Environment
 
-## Deployment Flow
+Blue represents the current production version.
 
-1. Developer pushes code.
-2. CI checks out the repository.
-3. Application tests run.
-4. Docker image is built.
-5. Image receives a unique tag.
-6. Image is pushed to a container registry.
-7. Kubernetes deployment is updated.
-8. Deployment status is checked.
-9. Previous version can be restored if deployment fails.
+    BLUE
+    Version 1
+    2 replicas
 
-## Commands Used
+The Service initially selects:
 
-- git status
-- git add
-- git commit
-- git push
-- docker build
-- docker tag
-- docker push
-- kubectl apply
-- kubectl get pods
-- kubectl get deployments
-- kubectl rollout status
-- kubectl rollout undo
+    app: project-29
+    version: blue
 
-## Testing
+## Green Environment
 
-### Successful Deployment
+Green represents the new application version.
 
-Deploy a valid container image.
+    GREEN
+    Version 2
+    2 replicas
 
-Expected result:
+Green is deployed and tested before receiving production traffic.
 
-- Image is available in the registry.
-- Kubernetes creates or updates the Pods.
-- Pods become Ready.
-- Deployment rollout completes successfully.
+## Blue/Green Deployment Flow
 
-### Failed Deployment
+    Blue running in production
+            |
+            v
+    Deploy Green
+            |
+            v
+    Test Green
+            |
+            v
+    Switch Service selector
+            |
+            v
+    Green receives production traffic
 
-Deploy an invalid image tag or intentionally broken application version.
+Blue remains available for rollback.
 
-Expected result:
+## Docker Images
 
-- Kubernetes reports the deployment problem.
-- Pods fail to become Ready.
-- Rollout does not complete successfully.
-- Previous working version can be restored.
+Blue image:
+
+    project-29-blue:latest
+
+Green image:
+
+    project-29-green:latest
+
+Both images were loaded into the Kind Kubernetes node.
+
+## Kubernetes Resources
+
+### Blue Deployment
+
+    k8s/blue-deployment.yaml
+
+Runs two Blue replicas.
+
+### Green Deployment
+
+    k8s/green-deployment.yaml
+
+Runs two Green replicas.
+
+### Service
+
+    k8s/service.yaml
+
+The Service provides a stable endpoint and controls which version receives traffic.
+
+## Traffic Switching
+
+Initial selector:
+
+    version: blue
+
+Green cutover:
+
+    kubectl patch service project-29 \
+      -p '{"spec":{"selector":{"app":"project-29","version":"green"}}}'
+
+Rollback:
+
+    kubectl patch service project-29 \
+      -p '{"spec":{"selector":{"app":"project-29","version":"blue"}}}'
+
+No application pods need to be recreated during the traffic switch.
+
+## Verification
+
+Blue was verified with:
+
+    Project 29 - BLUE Version
+
+Green was verified with:
+
+    Project 29 - GREEN Version
+
+After switching the Service selector to Green, production traffic returned:
+
+    Project 29 - GREEN Version
+
+After rollback, production traffic returned:
+
+    Project 29 - BLUE Version
+
+## Rollback
+
+Blue remains running while Green receives production traffic.
+
+If Green has a problem, the Service selector can immediately be changed back to Blue.
+
+This provides a fast rollback mechanism.
 
 ## Key Concepts Learned
 
-- CI/CD
-- Docker image
-- Container registry
-- Kubernetes Deployment
-- Kubernetes Pods
-- Rolling update
-- Readiness
-- Deployment verification
-- Rollback
-- kubectl
-- Helm
+- Blue/Green deployment
+- Kubernetes Deployments
+- Kubernetes Services
+- Service selectors
+- Traffic switching
+- Zero-downtime deployment strategy
+- Pre-production validation
+- Fast rollback
+- Multiple application versions
+- Desired state
 
-## Why This Matters
+## Result
 
-Modern applications are often deployed to Kubernetes through automated pipelines.
+Project 29 successfully demonstrated:
 
-A Kubernetes deployment pipeline connects source code, container images, CI/CD automation, and cluster operations into one repeatable process.
+- Blue deployment
+- Green deployment
+- Independent validation of Green
+- Production traffic switching
+- Blue/Green rollback
+
+The application was switched from Blue to Green and successfully rolled back to Blue.
+

@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Blue/Green deployment images'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying Blue/Green Kubernetes workloads'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Verifying deployment'
+                sh '''
+                    kubectl get deployments
+                    kubectl get pods -l app=project-29
+                    kubectl get service project-29
+                '''
+            }
+        }
+    }
+}

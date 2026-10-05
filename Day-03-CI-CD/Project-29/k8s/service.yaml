@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-29
+spec:
+  selector:
+    app: project-29
+    version: blue
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: ClusterIP
