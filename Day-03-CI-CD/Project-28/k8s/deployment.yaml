@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-28
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project-28
+  template:
+    metadata:
+      labels:
+        app: project-28
+    spec:
+      containers:
+        - name: project-28
+          image: mhhuzaifa223/devops-project-28:latest
+          ports:
+            - containerPort: 5000

@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Kubernetes application image'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying application to Kubernetes'
+                sh '''
+                    kubectl apply -f Day-03-CI-CD/Project-28/k8s/deployment.yaml
+                    kubectl apply -f Day-03-CI-CD/Project-28/k8s/service.yaml
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    kubectl rollout status deployment/project-28
+                    kubectl get pods -l app=project-28
+                    kubectl get service project-28
+                '''
+            }
+        }
+    }
+}
