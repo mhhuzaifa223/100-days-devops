@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:15
+    container_name: project-33-db
+    environment:
+      POSTGRES_DB: devops
+      POSTGRES_USER: devops
+      POSTGRES_PASSWORD: devops123
+    ports:
+      - "5433:5432"
+    volumes:
+      - project-33-data:/var/lib/postgresql/data
+
+volumes:
+  project-33-data:
