@@ -1,123 +1,155 @@
-# Project 28 — DevSecOps Security Scanning Pipeline
+# Project 28 — Kubernetes Deployment Pipeline
 
 ## Objective
 
-Learn how security checks can be integrated directly into a CI/CD pipeline so vulnerabilities are detected before insecure code or infrastructure reaches production.
+Deploy a containerized Flask application to Kubernetes using a Jenkins CI/CD pipeline.
 
 ## Technologies
 
-- GitHub Actions or Jenkins
-- Trivy
-- SonarQube
-- OWASP ZAP
-- Checkov
+- Jenkins
+- Kubernetes
+- Kind
 - Docker
-- Linux
+- Python
+- Flask
+- kubectl
 
-## What I Practiced
+## Architecture
 
-- Integrating security into CI/CD
-- Static Application Security Testing (SAST)
-- Software Composition Analysis (SCA)
-- Container image scanning
-- Infrastructure-as-Code scanning
-- Dynamic Application Security Testing (DAST)
-- Failing pipelines when critical vulnerabilities are detected
+    GitHub
+       ↓
+    Jenkins
+       ↓
+    Docker Image
+       ↓
+    Kubernetes Deployment
+       ↓
+    2 Flask Pods
+       ↓
+    Kubernetes Service
 
-## Pipeline Workflow
+## Kubernetes Resources
 
-Code
-→ Build
-→ SAST
-→ Dependency Scan
-→ Build Container
-→ Container Scan
-→ IaC Scan
-→ DAST
-→ Deploy
+### Deployment
 
-## Security Checks
+The Deployment runs two replicas of the application.
 
-### SAST
+    Deployment
+       ├── Pod 1
+       └── Pod 2
 
-Analyzes source code for security issues.
+The Deployment controller maintains the desired replica count.
 
-Example tool:
+### Service
 
-- SonarQube
+The application is exposed internally through a ClusterIP Service.
 
-### SCA
+    Service :80
+        ↓
+    Pod :5000
 
-Checks application dependencies for known vulnerabilities.
+## Local Kubernetes Environment
 
-Example tools:
+AWS EKS was previously configured in kubectl, but the old EKS API endpoint was no longer available.
 
-- Snyk
-- OWASP dependency scanners
+For this project, a local Kind cluster was created:
 
-### Container Scanning
+    kind create cluster --name devops-lab
 
-Scans Docker images for vulnerable packages and dependencies.
+The cluster was verified with:
 
-Example tool:
+    kubectl get nodes
 
-- Trivy
+The control-plane node reported Ready.
 
-### IaC Scanning
+## Docker Image
 
-Checks infrastructure configuration for security problems.
+The application image was built locally:
 
-Example tool:
+    docker build -t devops-project-28:latest Day-03-CI-CD/Project-28
 
-- Checkov
+The image was loaded into the Kind node:
 
-### DAST
+    kind load docker-image devops-project-28:latest --name devops-lab
 
-Tests a running application from an external perspective.
+## Image Pull Troubleshooting
 
-Example tool:
+The first deployment produced:
 
-- OWASP ZAP
+    ImagePullBackOff
+    ErrImagePull
 
-## Testing
+The image existed inside the Kind node, but Kubernetes attempted to pull the latest image.
 
-Two scenarios should be tested.
+The deployment was fixed with:
 
-### Secure Build
+    imagePullPolicy: IfNotPresent
 
-The application passes the configured security checks.
+This allowed Kubernetes to use the locally loaded image.
 
-Expected result:
+## Verification
 
-- Security scans complete successfully.
-- No blocking vulnerabilities are detected.
-- Pipeline continues.
+Successful deployment:
 
-### Vulnerable Build
+    kubectl get pods -l app=project-28
 
-Introduce or use a deliberately vulnerable dependency, container image, or configuration.
+Result:
 
-Expected result:
+    2 pods Running
 
-- Scanner detects the vulnerability.
-- Pipeline reports the finding.
-- Pipeline stops when the configured severity threshold is exceeded.
+Deployment:
+
+    kubectl get deployment project-28
+
+Result:
+
+    2/2 Available
+
+Service:
+
+    kubectl get service project-28
+
+Result:
+
+    ClusterIP :80
+
+## Application Testing
+
+The Service can be tested locally with:
+
+    kubectl port-forward service/project-28 8082:80
+
+Then:
+
+    curl http://localhost:8082
+    curl http://localhost:8082/health
+
+## Self-Healing Test
+
+Deleting a managed Pod causes the Deployment controller to create a replacement.
+
+    kubectl delete pod -l app=project-28
+
+This demonstrates Kubernetes desired-state reconciliation.
 
 ## Key Concepts Learned
 
-- DevSecOps
-- Security scanning
-- SAST
-- SCA
-- DAST
-- Container security
-- IaC security
-- Vulnerability severity
-- Security quality gates
-- Shift-left security
+- Kubernetes Deployment
+- Kubernetes Pods
+- Kubernetes Services
+- ClusterIP
+- Replica management
+- Desired state
+- Self-healing
+- ImagePullBackOff
+- imagePullPolicy
+- Kind
+- kubectl
+- Container-to-Pod deployment
 
-## Why This Matters
+## Result
 
-Security should be part of the development and deployment process rather than a final manual check.
+The Flask application was successfully deployed to a local Kubernetes cluster with two replicas.
 
-Automated security scanning allows teams to identify vulnerabilities earlier and prevent high-risk changes from reaching production.
+The deployment was tested, the Service was verified, and Kubernetes self-healing behavior was demonstrated.
+
