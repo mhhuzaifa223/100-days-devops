@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: project-41-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: project41.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: project-41-frontend
+                port:
+                  number: 80
