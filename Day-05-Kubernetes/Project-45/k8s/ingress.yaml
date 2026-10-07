@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: project-45-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: project45.local
+      http:
+        paths:
+          - path: /app1(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: project-45-app1
+                port:
+                  number: 80
+          - path: /app2(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: project-45-app2
+                port:
+                  number: 80
