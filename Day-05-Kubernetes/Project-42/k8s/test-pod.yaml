@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-42-test
+spec:
+  containers:
+    - name: test
+      image: busybox:1.36
+      command: ["sh", "-c", "env | grep -E 'DB_|APP_ENV' && sleep 3600"]
+      envFrom:
+        - configMapRef:
+            name: project-42-config
+        - secretRef:
+            name: project-42-secret
