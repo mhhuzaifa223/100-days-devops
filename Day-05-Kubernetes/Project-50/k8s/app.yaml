@@ -1,0 +1,245 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-50
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-50-config
+  namespace: project-50
+data:
+  POSTGRES_DB: devops50
+  POSTGRES_USER: appuser
+  DB_HOST: project-50-database
+  APP_ENV: production
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: project-50-secret
+  namespace: project-50
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "Demo-50-Change-Me"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: project-50-db-pvc
+  namespace: project-50
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-50-database
+  namespace: project-50
+spec:
+  selector:
+    app: project-50-database
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-50-database
+  namespace: project-50
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: project-50-database
+  template:
+    metadata:
+      labels:
+        app: project-50-database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: project-50-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: project-50-secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: database-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: project-50-db-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-50-backend
+  namespace: project-50
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project-50-backend
+  template:
+    metadata:
+      labels:
+        app: project-50-backend
+    spec:
+      containers:
+        - name: backend
+          image: project-41-backend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: project-50-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: project-50-secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "500m"
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-50-backend
+  namespace: project-50
+spec:
+  selector:
+    app: project-50-backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-50-frontend
+  namespace: project-50
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project-50-frontend
+  template:
+    metadata:
+      labels:
+        app: project-50-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: project-50-frontend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-50-frontend
+  namespace: project-50
+spec:
+  selector:
+    app: project-50-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: project-50-ingress
+  namespace: project-50
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: project50.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: project-50-frontend
+                port:
+                  number: 80
