@@ -8,3 +8,6 @@ crash.log
 # Terraform generated files
 tfplan
 .terraform.lock.hcl
+
+# Terraform plan files
+tfplan
