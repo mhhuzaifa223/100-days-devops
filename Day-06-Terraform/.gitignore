@@ -4,3 +4,7 @@
 *.tfplan
 terraform.tfvars
 crash.log
+
+# Terraform generated files
+tfplan
+.terraform.lock.hcl
