@@ -1,0 +1,8 @@
+2026-10-13 09:00:00 INFO Application started
+2026-10-13 09:01:00 WARNING High memory usage
+2026-10-13 09:02:00 ERROR Database connection failed
+2026-10-13 09:03:00 INFO Request processed
+2026-10-13 09:04:00 ERROR Database connection failed
+2026-10-13 09:05:00 WARNING Disk usage high
+2026-10-13 09:06:00 ERROR API timeout
+2026-10-13 09:07:00 INFO Health check passed
