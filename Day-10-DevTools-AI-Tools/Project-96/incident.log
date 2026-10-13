@@ -1,0 +1,5 @@
+2026-10-13 09:10:01 INFO Monitoring check started
+2026-10-13 09:10:05 WARNING CPU utilization reached 82%
+2026-10-13 09:10:08 ERROR API health check failed
+2026-10-13 09:10:10 ERROR HTTP 503 Service Unavailable
+2026-10-13 09:10:12 WARNING Retry attempt 1 failed
