@@ -1,0 +1,13 @@
+# Keep the intentionally vulnerable training repository local
+lab-repo/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
