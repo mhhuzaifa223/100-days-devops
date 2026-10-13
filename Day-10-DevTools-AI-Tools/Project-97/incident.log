@@ -1,0 +1,4 @@
+INFO Monitoring started
+WARNING CPU utilization reached 82%
+ERROR API health check failed
+ERROR HTTP 503 Service Unavailable

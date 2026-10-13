@@ -1,0 +1,14 @@
+{
+  "check_disk": {
+    "description": "Check local root filesystem usage",
+    "tool": "disk_status"
+  },
+  "check_incident": {
+    "description": "Review a sample incident log",
+    "tool": "incident_summary"
+  },
+  "show_help": {
+    "description": "Show available approved tasks",
+    "tool": "help"
+  }
+}
