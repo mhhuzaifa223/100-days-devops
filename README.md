@@ -14,3 +14,9 @@ A hands-on journey of 100 DevOps projects covering Linux, Bash, Git, CI/CD, Dock
 - [ ] Day 8 — DevSecOps
 Day 2 Git practice in progress.
 - Project 18 — Pull Request workflow
+
+## Deployment result
+- Argo CD Application: Synced
+- Kubernetes Deployment: 2 NGINX replicas
+- Service: ClusterIP on port 80
+- Source of truth: GitHub repository
