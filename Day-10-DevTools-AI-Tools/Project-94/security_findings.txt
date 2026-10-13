@@ -1,0 +1,24 @@
+FINDING: Hardcoded secret detected in config.py
+TOOL: Gitleaks
+SEVERITY: CRITICAL
+DETAIL: A credential-like value was found in source code.
+
+FINDING: Container image contains a vulnerable package
+TOOL: Trivy
+SEVERITY: HIGH
+DETAIL: An installed operating-system package has a known vulnerability.
+
+FINDING: subprocess call uses shell=True
+TOOL: Bandit
+SEVERITY: HIGH
+DETAIL: Shell command execution may introduce command-injection risk.
+
+FINDING: Container runs as root
+TOOL: Trivy
+SEVERITY: MEDIUM
+DETAIL: The container configuration does not specify a non-root user.
+
+FINDING: Missing security headers
+TOOL: Security scan
+SEVERITY: LOW
+DETAIL: The web response is missing recommended security headers.
