@@ -1,0 +1,4 @@
+*.log
+trivy-report.json
+.venv/
+__pycache__/
