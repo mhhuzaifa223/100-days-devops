@@ -1,0 +1,38 @@
+[
+  {
+    "name": "dev-test-server",
+    "type": "EC2",
+    "environment": "development",
+    "monthly_cost": 45.00,
+    "cpu_utilization": 4,
+    "running": true,
+    "owner": "development-team"
+  },
+  {
+    "name": "production-api",
+    "type": "EC2",
+    "environment": "production",
+    "monthly_cost": 120.00,
+    "cpu_utilization": 55,
+    "running": true,
+    "owner": "platform-team"
+  },
+  {
+    "name": "unused-test-volume",
+    "type": "EBS",
+    "environment": "development",
+    "monthly_cost": 12.00,
+    "cpu_utilization": 0,
+    "running": false,
+    "owner": "development-team"
+  },
+  {
+    "name": "staging-server",
+    "type": "EC2",
+    "environment": "staging",
+    "monthly_cost": 60.00,
+    "cpu_utilization": 8,
+    "running": true,
+    "owner": "qa-team"
+  }
+]
