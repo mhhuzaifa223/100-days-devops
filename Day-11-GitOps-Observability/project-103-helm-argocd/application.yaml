@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-helm
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mhhuzaifa223/100-days-devops.git
+    targetRevision: main
+    path: Day-11-GitOps-Observability/project-103-helm-argocd
+    helm:
+      releaseName: nginx-demo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: project-103
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

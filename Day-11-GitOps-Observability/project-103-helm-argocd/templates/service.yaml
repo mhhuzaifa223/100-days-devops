@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "project-103-helm-argocd.fullname" . }}
+  labels:
+    {{- include "project-103-helm-argocd.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "project-103-helm-argocd.selectorLabels" . | nindent 4 }}
