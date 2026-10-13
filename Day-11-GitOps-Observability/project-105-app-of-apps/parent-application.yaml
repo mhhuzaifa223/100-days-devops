@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-apps-parent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mhhuzaifa223/100-days-devops.git
+    targetRevision: main
+    path: Day-11-GitOps-Observability/project-105-app-of-apps
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
