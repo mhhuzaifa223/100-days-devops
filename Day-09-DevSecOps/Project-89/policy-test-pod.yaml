@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-demo
+spec:
+  containers:
+    - name: app
+      image: nginx:1.28
+      securityContext:
+        privileged: false
