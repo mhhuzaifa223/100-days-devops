@@ -1,0 +1,7 @@
+2026-10-13 09:00:01 INFO Application started
+2026-10-13 09:00:05 INFO Database connection successful
+2026-10-13 09:01:12 WARNING Response time exceeded 2 seconds
+2026-10-13 09:02:20 ERROR Database connection timeout
+2026-10-13 09:02:21 ERROR Request failed with status 500
+2026-10-13 09:03:10 INFO Retry started
+2026-10-13 09:03:15 ERROR Database connection timeout
