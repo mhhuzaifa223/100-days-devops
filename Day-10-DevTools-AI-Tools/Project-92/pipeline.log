@@ -1,0 +1,6 @@
+2026-10-13 08:00:01 INFO Pipeline started
+2026-10-13 08:00:03 INFO Installing dependencies
+2026-10-13 08:00:10 INFO Running unit tests
+2026-10-13 08:00:12 ERROR ModuleNotFoundError: No module named 'requests'
+2026-10-13 08:00:13 ERROR Unit tests failed
+2026-10-13 08:00:14 ERROR Pipeline failed with exit code 1
