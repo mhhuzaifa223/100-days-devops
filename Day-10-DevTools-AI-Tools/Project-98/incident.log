@@ -1,0 +1,4 @@
+INFO ChatOps monitoring started
+WARNING Disk usage reached 82%
+ERROR API health check failed
+ERROR HTTP 503 Service Unavailable
