@@ -1,0 +1,8 @@
+NAME             READY   STATUS             RESTARTS   AGE
+web-app-7d9f     0/1     CrashLoopBackOff   5          4m
+api-app-6c8b     0/1     ImagePullBackOff   0          2m
+worker-app-5a2d  1/1     Running            0          8m
+
+Warning  BackOff          Back-off restarting failed container web-app
+Warning  Failed           Failed to pull image "example/api:missing"
+Error: ImagePullBackOff
